@@ -1,0 +1,56 @@
+{
+  "name": "@contextcapsule/mcp-server",
+  "version": "0.1.2",
+  "description": "MCP server for Context Capsule — portable execution context for AI agent workflows",
+  "type": "module",
+  "bin": {
+    "contextcapsule-mcp": "dist/bin/cli.js"
+  },
+  "main": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/src/index.js",
+      "types": "./dist/src/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "smithery.yaml"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "mcp",
+    "contextcapsule",
+    "context",
+    "handoff",
+    "ai-agents",
+    "model-context-protocol"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Johnny-Z13/context-capsule.git",
+    "directory": "packages/mcp-server"
+  },
+  "homepage": "https://www.contextcapsule.ai",
+  "bugs": {
+    "url": "https://github.com/Johnny-Z13/context-capsule/issues"
+  }
+}

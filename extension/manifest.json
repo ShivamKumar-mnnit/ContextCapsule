@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "Context Capsule",
+  "version": "1.0.0",
+  "description": "Save AI conversation context as portable capsules. Continue any chat in any AI.",
+  "permissions": ["storage", "activeTab", "scripting", "clipboardWrite"],
+  "host_permissions": [
+    "http://localhost:*/*",
+    "https://www.contextcapsule.ai/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Context Capsule"
+  }
+}

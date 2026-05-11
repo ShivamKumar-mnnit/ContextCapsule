@@ -1,0 +1,76 @@
+{
+  "name": "context-capsule",
+  "displayName": "Context Capsule",
+  "description": "Save your coding context as a portable capsule. Resume in any AI.",
+  "version": "1.0.0",
+  "publisher": "contextcapsule",
+  "engines": { "vscode": "^1.80.0" },
+  "categories": ["Other", "AI"],
+  "keywords": ["ai", "context", "capsule", "cursor", "handoff"],
+  "activationEvents": ["onStartupFinished"],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "contextcapsule.saveFile",
+        "title": "Save Current File as Capsule",
+        "category": "Context Capsule"
+      },
+      {
+        "command": "contextcapsule.saveSelection",
+        "title": "Save Selection as Capsule",
+        "category": "Context Capsule"
+      },
+      {
+        "command": "contextcapsule.saveWorkspace",
+        "title": "Save Workspace Context as Capsule",
+        "category": "Context Capsule"
+      },
+      {
+        "command": "contextcapsule.loadCapsule",
+        "title": "Load Capsule",
+        "category": "Context Capsule"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "contextcapsule.saveSelection",
+          "when": "editorHasSelection",
+          "group": "contextcapsule@1"
+        },
+        {
+          "command": "contextcapsule.saveFile",
+          "group": "contextcapsule@2"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "contextcapsule.saveFile",
+          "group": "navigation"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Context Capsule",
+      "properties": {
+        "contextcapsule.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "Your Context Capsule API key (ak_...)",
+          "secret": true
+        },
+        "contextcapsule.serverUrl": {
+          "type": "string",
+          "default": "http://localhost:3000",
+          "description": "Context Capsule server URL"
+        },
+        "contextcapsule.ollamaUrl": {
+          "type": "string",
+          "default": "http://localhost:11434",
+          "description": "Ollama server URL for auto-summary (optional)"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Context Capsule</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div id="app">
+
+    <header>
+      <span class="logo-icon">⬛</span>
+      <span class="logo-text">CONTEXT CAPSULE</span>
+    </header>
+
+    <!-- Site detection badge -->
+    <div class="section">
+      <div id="site-badge" class="site-badge">Detecting...</div>
+    </div>
+
+    <!-- Save section -->
+    <div class="section">
+      <button id="extract-btn" class="btn-primary" disabled>
+        Extract &amp; Save Capsule
+      </button>
+      <div id="manual-toggle" class="link-btn">Fill in manually instead</div>
+    </div>
+
+    <!-- Manual form (hidden by default) -->
+    <div id="manual-form" class="section hidden">
+      <label class="field-label">SUMMARY</label>
+      <textarea id="summary" placeholder="What was accomplished / discussed?" rows="2"></textarea>
+
+      <label class="field-label">DECISIONS (one per line)</label>
+      <textarea id="decisions" placeholder="Used React&#10;Skipped auth for now" rows="3"></textarea>
+
+      <label class="field-label">NEXT STEPS (one per line)</label>
+      <textarea id="next-steps" placeholder="Set up CI&#10;Write tests" rows="3"></textarea>
+
+      <button id="save-manual-btn" class="btn-primary">Save Capsule</button>
+    </div>
+
+    <!-- Result (hidden until capsule created) -->
+    <div id="result" class="section hidden">
+      <div class="result-header">✓ Capsule Created</div>
+      <div id="capsule-id" class="capsule-id"></div>
+      <div id="capsule-summary-preview" class="summary-preview"></div>
+      <div class="copy-row">
+        <button id="copy-id-btn" class="btn-secondary">Copy ID</button>
+        <button id="copy-context-btn" class="btn-secondary">Copy for AI</button>
+      </div>
+    </div>
+
+    <!-- Load section -->
+    <div class="section">
+      <div class="section-title">LOAD CAPSULE</div>
+      <div class="input-row">
+        <input id="capsule-input" type="text" placeholder="cap_... or paste URL" />
+        <button id="load-btn" class="btn-secondary">Load</button>
+      </div>
+    </div>
+
+    <!-- Settings -->
+    <details id="settings-panel" class="section settings">
+      <summary>⚙ Settings</summary>
+      <div class="settings-body">
+        <label class="field-label">API KEY</label>
+        <input id="api-key" type="password" placeholder="ak_..." autocomplete="off" />
+
+        <label class="field-label">SERVER URL</label>
+        <input id="server-url" type="text" placeholder="http://localhost:3000" />
+
+        <label class="field-label">OLLAMA URL <span class="muted">(optional — for auto-summary)</span></label>
+        <input id="ollama-url" type="text" placeholder="http://localhost:11434" />
+
+        <button id="save-settings-btn" class="btn-secondary">Save Settings</button>
+      </div>
+    </details>
+
+    <!-- Status bar -->
+    <div id="status-msg" class="status hidden"></div>
+
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
