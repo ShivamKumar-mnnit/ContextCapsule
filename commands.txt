@@ -14,3 +14,9 @@ cd capsule-server && npm run db:seed -- you@email.com
 capusle api key
 ak_06ee6bb2583674e6bc237c21c1caf24cb218b81f40b39b282f43daba4c44e916
 
+
+wiki api key 
+ak_a32c63c2f72bde0c1eff7e5f3d096b27cdc3765af14e2e9c4549c8c24ea2fc20
+
+
+https://context-capsule-two.vercel.app
