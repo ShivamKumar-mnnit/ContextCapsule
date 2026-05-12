@@ -20,3 +20,6 @@ ak_a32c63c2f72bde0c1eff7e5f3d096b27cdc3765af14e2e9c4549c8c24ea2fc20
 
 
 https://context-capsule-two.vercel.app
+
+mail api key 
+re_cvAZuiAp_LmxsyTUzcgaBs44wbni9X3tM

@@ -12,8 +12,9 @@ document.addEventListener('DOMContentLoaded', () => {
     g('cap-key').value  = d.capsuleKey || ''
   })
 
-  g('btn-save-wiki').addEventListener('click', saveWiki)
-  g('btn-test-wiki').addEventListener('click', testWiki)
+  g('btn-save-wiki').addEventListener('click',       saveWiki)
+  g('btn-test-wiki').addEventListener('click',       testWiki)
+  g('btn-get-wiki-key').addEventListener('click',    getWikiKey)
   g('btn-save-cap').addEventListener('click',  saveCapsule)
   g('btn-test-cap').addEventListener('click',  testCapsule)
   g('btn-get-key').addEventListener('click',   getApiKey)
@@ -41,6 +42,33 @@ async function getApiKey() {
     toast('get-key-toast', 'ok', `✓ API key sent to ${email} — check your inbox.`)
   } catch (err) {
     toast('get-key-toast', 'err', err.message)
+  } finally {
+    setBtn(btn, 'Send Key', false)
+  }
+}
+
+// ── Get Wiki API key by email ─────────────────────────────────────────────────
+
+async function getWikiKey() {
+  const email = g('wiki-email').value.trim()
+  const url   = g('wiki-url').value.trim().replace(/\/$/, '') || DEFAULT_WIKI_URL
+
+  if (!email) { toast('get-wiki-key-toast', 'err', 'Enter your email address.'); return }
+
+  const btn = g('btn-get-wiki-key')
+  setBtn(btn, '…', true)
+
+  try {
+    const res  = await fetch(`${url}/v1/auth/signup`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ email, source: 'web' }),
+    })
+    const data = await res.json().catch(() => ({}))
+    if (!res.ok) throw new Error(data.message || `Failed (${res.status})`)
+    toast('get-wiki-key-toast', 'ok', `✓ Wiki API key sent to ${email} — check your inbox.`)
+  } catch (err) {
+    toast('get-wiki-key-toast', 'err', err.message)
   } finally {
     setBtn(btn, 'Send Key', false)
   }

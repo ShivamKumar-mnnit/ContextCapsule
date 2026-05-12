@@ -7,6 +7,7 @@ import { sha256 } from '../lib/hash.js'
 import { errorResponse } from '../lib/errors.js'
 import { isValidEmail } from '../lib/validate.js'
 import { rateLimitByIp } from '../middleware/rate-limit.js'
+import { sendEmail, renderWikiKeyEmail } from '../lib/email.js'
 
 const authRouter = new Hono()
 
@@ -60,6 +61,21 @@ authRouter.post('/signup', async (c) => {
     wikiId,
     usageResetAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
   })
+
+  const source = typeof body.source === 'string' ? body.source : 'api'
+
+  if (source === 'web') {
+    await sendEmail({
+      to: email,
+      subject: 'Your Wiki API Key',
+      html: renderWikiKeyEmail(key, wikiId),
+    })
+    return c.json({
+      wiki_id: wikiId,
+      tier: 'free',
+      message: 'API key sent to your email.',
+    }, 201)
+  }
 
   return c.json({
     api_key: key,

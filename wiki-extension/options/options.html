@@ -144,9 +144,19 @@
     </div>
 
     <div class="fg">
+      <label>Get API Key by Email</label>
+      <div style="display:flex;gap:8px">
+        <input type="email" id="wiki-email" placeholder="you@email.com">
+        <button class="btn btn-secondary" id="btn-get-wiki-key" style="white-space:nowrap;flex-shrink:0">Send Key</button>
+      </div>
+      <div class="hint">Enter your email — we'll mail your <code>ak_…</code> key to you.</div>
+    </div>
+    <div id="get-wiki-key-toast" class="hidden" style="margin-bottom:14px"></div>
+
+    <div class="fg">
       <label>Wiki API Key</label>
       <input type="password" id="wiki-key" class="mono" placeholder="ak_…">
-      <div class="hint">Get one: <code>cd capsule-server && npm run db:seed -- you@email.com</code></div>
+      <div class="hint">Paste the key from your email.</div>
     </div>
 
     <div class="actions">
