@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Wiki Clipper</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      width: 380px;
+      background: #0a0a0a;
+      color: #e5e7eb;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    /* ── Header ── */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 9px 14px;
+      border-bottom: 1px solid #1f2937;
+    }
+
+    .logo {
+      font-family: 'Courier New', Courier, monospace;
+      font-weight: 700;
+      font-size: 12px;
+      color: #16a34a;
+      letter-spacing: 3px;
+    }
+
+    .servers {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .srv {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      color: #6b7280;
+    }
+
+    .dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: #374151;
+      flex-shrink: 0;
+    }
+    .dot.on  { background: #16a34a; }
+    .dot.off { background: #ef4444; }
+
+    .icon-btn {
+      background: none; border: none;
+      color: #6b7280; cursor: pointer;
+      padding: 3px 5px; border-radius: 4px;
+      font-size: 13px; line-height: 1;
+    }
+    .icon-btn:hover { background: #1f2937; color: #e5e7eb; }
+
+    /* ── Tabs (4) ── */
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid #1f2937;
+    }
+
+    .tab-btn {
+      flex: 1;
+      background: none; border: none;
+      border-bottom: 2px solid transparent;
+      color: #6b7280; cursor: pointer;
+      padding: 7px 0;
+      font-size: 11px; font-weight: 600;
+      transition: color 0.12s;
+      letter-spacing: 0.02em;
+    }
+    .tab-btn:hover:not(.active) { color: #9ca3af; }
+    .tab-btn.active { color: #16a34a; border-bottom-color: #16a34a; }
+
+    /* ── Setup screen ── */
+    #screen-setup {
+      padding: 28px 20px;
+      text-align: center;
+    }
+    .setup-icon  { font-size: 26px; margin-bottom: 10px; }
+    .setup-title { font-family: 'Courier New', monospace; color: #16a34a; font-size: 14px; font-weight: 700; letter-spacing: 2px; margin-bottom: 6px; }
+    .setup-sub   { color: #6b7280; font-size: 12px; margin-bottom: 18px; }
+
+    /* ── Pane ── */
+    .pane {
+      padding: 12px 14px;
+      max-height: 460px;
+      overflow-y: auto;
+    }
+
+    /* ── Forms ── */
+    .fg { margin-bottom: 10px; }
+
+    label {
+      display: block;
+      font-size: 10px; font-weight: 700;
+      color: #6b7280;
+      text-transform: uppercase; letter-spacing: 0.07em;
+      margin-bottom: 4px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="url"],
+    textarea, select {
+      width: 100%;
+      background: #111827;
+      border: 1px solid #1f2937;
+      border-radius: 6px;
+      color: #e5e7eb;
+      font-size: 12px;
+      padding: 7px 10px;
+      outline: none;
+      font-family: inherit;
+    }
+    input:focus, textarea:focus, select:focus { border-color: #16a34a; }
+
+    textarea { resize: vertical; height: 80px; line-height: 1.5; }
+    textarea.tall { height: 110px; }
+
+    .char-hint { font-size: 10px; color: #4b5563; text-align: right; margin-top: 2px; }
+
+    .row   { display: flex; gap: 8px; align-items: flex-end; }
+    .row .fg { flex: 1; margin-bottom: 0; }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 5px; border: none; border-radius: 6px;
+      font-size: 12px; font-weight: 600; cursor: pointer;
+      padding: 7px 14px;
+      transition: background 0.12s, opacity 0.12s;
+    }
+
+    .btn-primary  { background: #16a34a; color: #fff; width: 100%; padding: 9px; font-size: 13px; }
+    .btn-primary:hover   { background: #15803d; }
+    .btn-primary:disabled { background: #374151; color: #6b7280; cursor: not-allowed; }
+
+    .btn-cap { background: #1e3a5f; color: #93c5fd; width: 100%; padding: 9px; font-size: 13px; border: 1px solid #1e40af; }
+    .btn-cap:hover { background: #1e3a8a; }
+    .btn-cap:disabled { background: #374151; color: #6b7280; cursor: not-allowed; border-color: #374151; }
+
+    .btn-secondary { background: #1f2937; color: #e5e7eb; border: 1px solid #374151; }
+    .btn-secondary:hover { background: #374151; }
+
+    .btn-ghost { background: none; color: #16a34a; padding: 3px 8px; font-size: 11px; }
+    .btn-ghost:hover { background: rgba(22,163,74,0.1); }
+
+    .btn-ghost-blue { background: none; color: #60a5fa; padding: 3px 8px; font-size: 11px; }
+    .btn-ghost-blue:hover { background: rgba(59,130,246,0.1); }
+
+    /* ── Toast ── */
+    .toast {
+      border-radius: 6px; padding: 8px 11px;
+      font-size: 12px; margin-bottom: 10px; line-height: 1.4;
+    }
+    .toast-ok   { background: rgba(22,163,74,0.15);  border: 1px solid rgba(22,163,74,0.3);  color: #4ade80; }
+    .toast-err  { background: rgba(239,68,68,0.15);  border: 1px solid rgba(239,68,68,0.3);  color: #f87171; }
+    .toast-info { background: rgba(59,130,246,0.12); border: 1px solid rgba(59,130,246,0.3); color: #93c5fd; }
+
+    /* ── Page list ── */
+    .page-item { padding: 8px 0; border-bottom: 1px solid #111827; cursor: pointer; }
+    .page-item:last-child { border-bottom: none; }
+    .page-item:hover .page-title { color: #16a34a; }
+    .page-title { font-size: 13px; color: #e5e7eb; font-weight: 500; margin-bottom: 3px; }
+    .page-meta  { display: flex; align-items: center; gap: 7px; }
+    .page-date  { font-size: 11px; color: #4b5563; }
+
+    .badge {
+      font-size: 9px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.05em;
+      padding: 1px 6px; border-radius: 10px;
+    }
+    .b-concept        { background: rgba(59,130,246,0.2);  color: #93c5fd; }
+    .b-entity         { background: rgba(139,92,246,0.2);  color: #c4b5fd; }
+    .b-source-summary { background: rgba(245,158,11,0.2);  color: #fcd34d; }
+    .b-synthesis      { background: rgba(22,163,74,0.2);   color: #4ade80; }
+    .b-query-result   { background: rgba(6,182,212,0.2);   color: #67e8f9; }
+    .b-overview       { background: rgba(249,115,22,0.2);  color: #fdba74; }
+
+    /* ── Page detail ── */
+    #page-detail {
+      position: fixed; inset: 0;
+      background: #0a0a0a;
+      padding: 10px 14px;
+      overflow-y: auto; z-index: 50;
+    }
+    .detail-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+    .detail-title  { font-size: 14px; font-weight: 600; color: #e5e7eb; margin-bottom: 10px; }
+    .detail-body   { font-size: 12px; color: #d1d5db; line-height: 1.65; white-space: pre-wrap; word-break: break-word; }
+
+    /* ── Page selection ── */
+    .sel-toolbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; min-height:22px; }
+    .sel-count   { font-size:11px; color:#16a34a; font-weight:600; }
+
+    .page-item         { display:flex; align-items:flex-start; gap:8px; padding:8px 0; border-bottom:1px solid #111827; }
+    .page-item:last-child { border-bottom:none; }
+    .page-item-body    { flex:1; min-width:0; cursor:pointer; }
+    .page-item-body:hover .page-title { color:#16a34a; }
+
+    input.page-check {
+      width:14px; height:14px; margin-top:2px;
+      accent-color:#16a34a; cursor:pointer; flex-shrink:0;
+    }
+
+    /* ── Export panel (inside Pages) ── */
+    .export-toggle {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 0; cursor: pointer; border-top: 1px solid #1f2937; margin-top: 4px;
+    }
+    .export-toggle-label { font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.06em; }
+    .export-toggle-icon  { font-size: 11px; color: #4b5563; }
+    .export-panel { padding-top: 8px; }
+
+    .capsule-out {
+      font-family: 'Courier New', monospace;
+      font-size: 11px; height: 120px;
+      background: #0d1117; color: #9ca3af; line-height: 1.5;
+    }
+    .copy-row { display: flex; justify-content: space-between; align-items: center; margin-top: 3px; }
+
+    /* ── Stats bar ── */
+    .stats-bar {
+      display: flex; background: #111827;
+      border: 1px solid #1f2937; border-radius: 8px;
+      overflow: hidden; margin-bottom: 10px;
+    }
+    .stat      { flex: 1; text-align: center; padding: 8px 4px; border-right: 1px solid #1f2937; }
+    .stat:last-child { border-right: none; text-align: left; padding-left: 10px; }
+    .stat-val  { font-size: 17px; font-weight: 700; color: #16a34a; font-family: monospace; }
+    .stat-lbl  { font-size: 9px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.06em; }
+    .stat-name { font-size: 12px; color: #9ca3af; font-weight: 500; }
+
+    /* ── Capsule result card ── */
+    .cap-card {
+      background: #0d1117;
+      border: 1px solid #1e3a8a;
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 10px;
+    }
+    .cap-id {
+      font-family: 'Courier New', monospace;
+      font-size: 12px; color: #93c5fd;
+      word-break: break-all; margin-bottom: 8px;
+    }
+    .cap-url {
+      font-size: 11px; color: #60a5fa;
+      word-break: break-all; margin-bottom: 10px;
+      text-decoration: none;
+    }
+    .cap-url:hover { text-decoration: underline; }
+    .cap-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+
+    /* ── Fetched capsule view ── */
+    .fetched-card {
+      background: #111827;
+      border: 1px solid #1f2937;
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 10px;
+    }
+    .fetched-section { margin-bottom: 10px; }
+    .fetched-section:last-child { margin-bottom: 0; }
+    .fetched-label {
+      font-size: 10px; font-weight: 700; color: #6b7280;
+      text-transform: uppercase; letter-spacing: 0.07em;
+      margin-bottom: 4px;
+    }
+    .fetched-text { font-size: 12px; color: #e5e7eb; line-height: 1.5; }
+    .fetched-list { list-style: none; }
+    .fetched-list li {
+      font-size: 12px; color: #d1d5db; padding: 3px 0;
+      border-bottom: 1px solid #1f2937; display: flex; gap: 6px;
+    }
+    .fetched-list li:last-child { border-bottom: none; }
+    .fetched-list li::before { content: "·"; color: #16a34a; flex-shrink: 0; }
+
+    .expiry-ok  { color: #4ade80; font-size: 11px; }
+    .expiry-soon { color: #fbbf24; font-size: 11px; }
+    .expiry-gone { color: #f87171; font-size: 11px; }
+
+    /* ── Advanced toggle ── */
+    .adv-toggle {
+      font-size: 11px; color: #4b5563; cursor: pointer;
+      margin-bottom: 8px; display: inline-flex; align-items: center; gap: 4px;
+    }
+    .adv-toggle:hover { color: #6b7280; }
+
+    /* ── Separator ── */
+    .sep { border: none; border-top: 1px solid #1f2937; margin: 10px 0; }
+
+    /* ── Spinner ── */
+    .spinner {
+      width: 16px; height: 16px;
+      border: 2px solid #1f2937; border-top-color: #16a34a;
+      border-radius: 50%; animation: spin 0.7s linear infinite; display: inline-block;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .center    { text-align: center; padding: 18px 0; }
+    .empty-msg { text-align: center; padding: 18px 0; color: #4b5563; font-size: 12px; }
+    .empty-icon { font-size: 20px; margin-bottom: 5px; }
+
+    .hidden { display: none !important; }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<header class="header">
+  <span class="logo">WIKI</span>
+  <div class="servers">
+    <div class="srv"><span class="dot" id="dot-wiki"></span><span id="lbl-wiki">wiki</span></div>
+    <div class="srv"><span class="dot" id="dot-cap"></span><span id="lbl-cap">capsule</span></div>
+  </div>
+  <button class="icon-btn" id="btn-settings" title="Settings">⚙</button>
+</header>
+
+<!-- ── Setup ── -->
+<div id="screen-setup" class="hidden">
+  <div class="setup-icon">📚</div>
+  <div class="setup-title">WIKI CLIPPER</div>
+  <p class="setup-sub">Configure both servers to get started.</p>
+  <button class="btn btn-primary" id="btn-open-options">Open Settings</button>
+</div>
+
+<!-- ── App ── -->
+<div id="screen-app" class="hidden">
+
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="clip">Clip</button>
+    <button class="tab-btn"        data-tab="pages">Pages</button>
+    <button class="tab-btn"        data-tab="create">Create</button>
+    <button class="tab-btn"        data-tab="fetch">Fetch</button>
+  </nav>
+
+  <!-- ────────────── CLIP ────────────── -->
+  <div id="tab-clip" class="pane">
+    <div id="clip-toast" class="hidden"></div>
+
+    <div class="fg">
+      <label>Title</label>
+      <input type="text" id="clip-title" placeholder="Page title…">
+    </div>
+
+    <div class="fg">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+        <label style="margin:0">Content</label>
+        <button class="btn btn-ghost" id="btn-grab">⚡ Grab text</button>
+      </div>
+      <textarea class="tall" id="clip-content" placeholder="Paste text or grab from the current page…"></textarea>
+      <div class="char-hint" id="clip-chars">0 chars</div>
+    </div>
+
+    <div class="row" style="margin-bottom:10px">
+      <div class="fg">
+        <label>Page type</label>
+        <select id="clip-type">
+          <option value="source-summary">Source Summary</option>
+          <option value="concept">Concept</option>
+          <option value="entity">Entity</option>
+          <option value="synthesis">Synthesis</option>
+          <option value="overview">Overview</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" id="btn-add">Add to Wiki</button>
+  </div>
+
+  <!-- ────────────── PAGES ────────────── -->
+  <div id="tab-pages" class="pane hidden">
+    <input type="text" id="pages-search" placeholder="Search pages…" style="margin-bottom:6px">
+
+    <!-- Selection toolbar -->
+    <div class="sel-toolbar">
+      <span id="sel-count" class="sel-count hidden"></span>
+      <div style="display:flex;gap:4px;margin-left:auto">
+        <button class="btn btn-ghost hidden" id="btn-sel-all">All</button>
+        <button class="btn btn-ghost hidden" id="btn-sel-clear">Clear</button>
+        <button class="btn btn-ghost" id="btn-sel-toggle">☑ Select</button>
+      </div>
+    </div>
+
+    <div id="pages-loading" class="center"><div class="spinner"></div></div>
+    <div id="pages-list"   class="hidden"></div>
+    <div id="pages-empty"  class="empty-msg hidden">
+      <div class="empty-icon">📄</div>No pages yet.
+    </div>
+    <button class="btn btn-secondary hidden" id="btn-more" style="width:100%;margin-top:8px">Load more</button>
+
+    <!-- Wiki export (collapsible) -->
+    <div class="export-toggle" id="export-toggle">
+      <span class="export-toggle-label">Export as Capsule</span>
+      <span class="export-toggle-icon" id="export-icon">▼</span>
+    </div>
+    <div id="export-panel" class="export-panel hidden">
+      <div id="export-toast" class="hidden"></div>
+      <div class="row" style="margin-bottom:8px">
+        <div class="fg">
+          <label>Label</label>
+          <input type="text" id="exp-label" placeholder="optional">
+        </div>
+        <div class="fg" style="max-width:100px">
+          <label>Max chars</label>
+          <input type="number" id="exp-max" value="32000" min="2000" step="1000">
+        </div>
+      </div>
+      <button class="btn btn-primary" id="btn-export" style="margin-bottom:8px">Generate &amp; Create Capsule</button>
+      <div id="exp-result" class="hidden">
+        <!-- Capsule ID — shareable -->
+        <div id="exp-cap-section" class="hidden" style="background:#0d1117;border:1px solid #1e3a8a;border-radius:6px;padding:8px 10px;margin-bottom:8px">
+          <div style="font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px">Capsule ID</div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <code id="exp-cap-id" style="font-size:11px;color:#93c5fd;word-break:break-all;flex:1;line-height:1.4"></code>
+            <button class="btn btn-ghost-blue" id="btn-copy-exp-id" style="white-space:nowrap;flex-shrink:0">Copy</button>
+          </div>
+          <div style="display:flex;gap:6px;margin-top:6px">
+            <button class="btn btn-ghost-blue" id="btn-exp-open-fetch" style="font-size:11px">Open in Fetch ↗</button>
+            <button class="btn btn-ghost-blue" id="btn-exp-copy-url"   style="font-size:11px">Copy URL</button>
+          </div>
+        </div>
+
+        <!-- Context text -->
+        <textarea class="capsule-out" id="exp-output" readonly></textarea>
+        <div class="copy-row">
+          <span class="char-hint" id="exp-meta"></span>
+          <button class="btn btn-ghost" id="btn-copy-exp">📋 Copy text</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ────────────── CREATE CAPSULE ────────────── -->
+  <div id="tab-create" class="pane hidden">
+    <div id="create-toast" class="hidden"></div>
+
+    <div class="fg">
+      <label>Summary <span style="color:#ef4444">*</span></label>
+      <textarea id="cr-summary" placeholder="What happened, what matters, what's the situation…" style="height:70px"></textarea>
+    </div>
+
+    <div class="fg">
+      <label>Decisions <span style="color:#4b5563;font-weight:400;text-transform:none">— one per line</span></label>
+      <textarea id="cr-decisions" placeholder="Used addColumn for backward compat&#10;Dual-write enabled for 2 weeks"></textarea>
+    </div>
+
+    <div class="fg">
+      <label>Next Steps <span style="color:#4b5563;font-weight:400;text-transform:none">— one per line</span></label>
+      <textarea id="cr-nextsteps" placeholder="Run integration tests&#10;Update API serializers"></textarea>
+    </div>
+
+    <div class="row" style="margin-bottom:10px">
+      <div class="fg">
+        <label>Audience</label>
+        <select id="cr-audience">
+          <option value="human" selected>Human</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Expires in</label>
+        <select id="cr-expires">
+          <option value="24">24 hours</option>
+          <option value="72">3 days</option>
+          <option value="168" selected>7 days</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Advanced (payload + idempotency) -->
+    <div class="adv-toggle" id="adv-toggle">▶ Advanced</div>
+    <div id="adv-panel" class="hidden">
+      <div class="fg">
+        <label>Payload <span style="color:#4b5563;font-weight:400;text-transform:none">— JSON object</span></label>
+        <textarea id="cr-payload" placeholder='{"key": "value"}'></textarea>
+      </div>
+      <div class="fg">
+        <label>Idempotency Key</label>
+        <input type="text" id="cr-idem" placeholder="optional — same key returns existing capsule">
+      </div>
+    </div>
+
+    <button class="btn btn-cap" id="btn-create">Create Capsule</button>
+
+    <!-- Created capsule result -->
+    <div id="cr-result" class="hidden">
+      <div class="cap-card">
+        <div class="cap-id" id="cr-id"></div>
+        <a class="cap-url" id="cr-url" target="_blank"></a>
+        <div class="cap-actions">
+          <button class="btn btn-ghost-blue" id="btn-copy-id">Copy ID</button>
+          <button class="btn btn-ghost-blue" id="btn-copy-url">Copy URL</button>
+          <button class="btn btn-ghost-blue" id="btn-open-cap">Open ↗</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ────────────── FETCH CAPSULE ────────────── -->
+  <div id="tab-fetch" class="pane hidden">
+    <div id="fetch-toast" class="hidden"></div>
+
+    <div class="fg">
+      <label>Capsule ID</label>
+      <div class="row" style="align-items:flex-end;gap:8px">
+        <input type="text" id="fetch-id" placeholder="cap_…" style="font-family:monospace;font-size:12px">
+        <button class="btn btn-cap" id="btn-fetch" style="width:auto;padding:7px 14px;white-space:nowrap">Load Capsule</button>
+      </div>
+    </div>
+
+    <div id="fetch-spinner" class="center hidden"><div class="spinner"></div></div>
+
+    <div id="fetched-card" class="fetched-card hidden">
+      <!-- Load to LLM — top action -->
+      <button class="btn btn-cap" id="btn-f-inject" style="width:100%;margin-bottom:10px">⚡ Load to current LLM tab</button>
+
+      <!-- Capsule ID — prominent, shareable -->
+      <div class="fetched-section" style="background:#0d1117;border:1px solid #1e3a8a;border-radius:6px;padding:8px 10px;margin-bottom:10px">
+        <div class="fetched-label" style="margin-bottom:4px">Capsule ID</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <code id="f-id" style="font-size:11px;color:#93c5fd;word-break:break-all;flex:1;line-height:1.4"></code>
+          <button class="btn btn-ghost-blue" id="btn-f-copy-id-inline" style="white-space:nowrap;flex-shrink:0">Copy</button>
+        </div>
+      </div>
+
+      <div class="fetched-section">
+        <div class="fetched-label">Summary</div>
+        <div class="fetched-text" id="f-summary"></div>
+      </div>
+      <div class="fetched-section" id="f-decisions-sec">
+        <div class="fetched-label">Decisions</div>
+        <ul class="fetched-list" id="f-decisions"></ul>
+      </div>
+      <div class="fetched-section" id="f-nextsteps-sec">
+        <div class="fetched-label">Next Steps</div>
+        <ul class="fetched-list" id="f-nextsteps"></ul>
+      </div>
+      <div class="fetched-section">
+        <div class="fetched-label">Expires</div>
+        <div id="f-expires"></div>
+      </div>
+
+      <!-- Wiki context (shown when capsule was created via wiki export) -->
+      <div class="fetched-section hidden" id="f-context-sec">
+        <div class="fetched-label" style="margin-bottom:4px">Wiki Context</div>
+        <textarea id="f-context" readonly
+          style="font-family:'Courier New',monospace;font-size:11px;height:140px;
+                 background:#0d1117;color:#9ca3af;line-height:1.5;
+                 width:100%;border:1px solid #1f2937;border-radius:6px;
+                 padding:7px 10px;outline:none;resize:vertical"></textarea>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3px">
+          <span id="f-context-meta" style="font-size:10px;color:#4b5563"></span>
+          <button class="btn btn-ghost" id="btn-f-copy-context">📋 Copy context</button>
+        </div>
+      </div>
+
+      <hr class="sep">
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-ghost-blue" id="btn-f-copy-id">Copy ID</button>
+        <button class="btn btn-ghost-blue" id="btn-f-copy-url">Copy URL</button>
+        <button class="btn btn-ghost-blue" id="btn-f-open">Open ↗</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── Page detail overlay ── -->
+<div id="page-detail" class="hidden">
+  <div class="detail-header">
+    <button class="btn btn-ghost" id="btn-back">← Back</button>
+    <span id="detail-badge" class="badge"></span>
+  </div>
+  <div class="detail-title" id="detail-title"></div>
+  <pre class="detail-body" id="detail-body"></pre>
+</div>
+
+<script src="popup.js"></script>
+</body>
+</html>

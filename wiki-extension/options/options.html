@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Wiki Clipper — Settings</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0a0a0a;
+      color: #e5e7eb;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 14px;
+      min-height: 100vh;
+      display: flex; align-items: flex-start; justify-content: center;
+      padding: 40px 16px;
+    }
+
+    .container { width: 100%; max-width: 500px; }
+
+    /* ── Header ── */
+    .header { display: flex; align-items: center; gap: 10px; margin-bottom: 28px; }
+    .logo { font-family: 'Courier New', monospace; font-weight: 700; font-size: 16px; color: #16a34a; letter-spacing: 3px; }
+    h1 { font-size: 15px; font-weight: 600; color: #9ca3af; }
+
+    /* ── Cards ── */
+    .card {
+      background: #111827; border: 1px solid #1f2937;
+      border-radius: 10px; padding: 18px 20px; margin-bottom: 14px;
+    }
+
+    .card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .card-title {
+      font-size: 11px; font-weight: 700; color: #6b7280;
+      text-transform: uppercase; letter-spacing: 0.08em;
+    }
+
+    .srv-badge {
+      font-size: 10px; font-weight: 600; padding: 2px 8px;
+      border-radius: 10px; letter-spacing: 0.04em;
+    }
+    .srv-badge.wiki    { background: rgba(22,163,74,0.2);  color: #4ade80; }
+    .srv-badge.capsule { background: rgba(59,130,246,0.2); color: #93c5fd; }
+
+    /* ── Form ── */
+    .fg { margin-bottom: 14px; }
+    .fg:last-child { margin-bottom: 0; }
+
+    label {
+      display: block; font-size: 11px; font-weight: 600; color: #9ca3af;
+      text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 5px;
+    }
+
+    input[type="text"],
+    input[type="url"],
+    input[type="password"] {
+      width: 100%;
+      background: #0d1117;
+      border: 1px solid #1f2937;
+      border-radius: 6px;
+      color: #e5e7eb;
+      font-size: 13px;
+      padding: 9px 12px;
+      outline: none;
+      font-family: inherit;
+    }
+    input:focus { border-color: #16a34a; }
+    input.mono { font-family: 'Courier New', monospace; font-size: 12px; }
+
+    .hint { font-size: 11px; color: #4b5563; margin-top: 5px; line-height: 1.5; }
+    code {
+      background: #1f2937; padding: 1px 5px; border-radius: 3px;
+      color: #9ca3af; font-family: monospace; font-size: 11px;
+    }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 6px; border: none; border-radius: 6px;
+      font-size: 13px; font-weight: 600; cursor: pointer;
+      padding: 9px 18px; transition: background 0.12s;
+    }
+    .btn-primary   { background: #16a34a; color: #fff; }
+    .btn-primary:hover  { background: #15803d; }
+    .btn-primary:disabled { background: #374151; color: #6b7280; cursor: not-allowed; }
+
+    .btn-secondary { background: #1f2937; color: #e5e7eb; border: 1px solid #374151; }
+    .btn-secondary:hover { background: #374151; }
+
+    .btn-cap { background: #1e3a5f; color: #93c5fd; border: 1px solid #1e40af; }
+    .btn-cap:hover { background: #1e3a8a; }
+
+    .actions { display: flex; gap: 10px; margin-top: 18px; }
+    .actions .btn-primary { flex: 1; }
+
+    /* ── Toast ── */
+    .toast {
+      padding: 10px 14px; border-radius: 8px;
+      font-size: 13px; margin-top: 14px; line-height: 1.4;
+    }
+    .toast-ok   { background: rgba(22,163,74,0.15);  border: 1px solid rgba(22,163,74,0.3);  color: #4ade80; }
+    .toast-err  { background: rgba(239,68,68,0.15);  border: 1px solid rgba(239,68,68,0.3);  color: #f87171; }
+    .toast-info { background: rgba(59,130,246,0.12); border: 1px solid rgba(59,130,246,0.3); color: #93c5fd; }
+
+    .hidden { display: none !important; }
+
+    /* ── Info table ── */
+    .info-table { background: #0d1117; border: 1px solid #1f2937; border-radius: 6px; overflow: hidden; }
+    .info-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; border-bottom: 1px solid #111827; }
+    .info-row:last-child { border-bottom: none; }
+    .info-key { font-size: 11px; color: #6b7280; }
+    .info-val { font-size: 11px; color: #e5e7eb; font-family: monospace; max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    /* ── Separator ── */
+    .sep { border: none; border-top: 1px solid #1f2937; margin: 4px 0 14px; }
+
+    a { color: #16a34a; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <span class="logo">WIKI</span>
+    <h1>Clipper Settings</h1>
+  </div>
+
+  <!-- ── Wiki Server ── -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Wiki Server</span>
+      <span class="srv-badge wiki">capsule-server</span>
+    </div>
+
+    <div class="fg">
+      <label>Server URL</label>
+      <input type="url" id="wiki-url" class="mono" placeholder="http://localhost:3001">
+      <div class="hint">Your <code>capsule-server</code> instance. Default: <code>http://localhost:3001</code></div>
+    </div>
+
+    <div class="fg">
+      <label>Wiki API Key</label>
+      <input type="password" id="wiki-key" class="mono" placeholder="ak_…">
+      <div class="hint">Get one: <code>cd capsule-server && npm run db:seed -- you@email.com</code></div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-secondary" id="btn-test-wiki">Test</button>
+      <button class="btn btn-primary"   id="btn-save-wiki">Save Wiki</button>
+    </div>
+    <div id="wiki-toast" class="hidden"></div>
+
+    <div id="wiki-info" class="hidden" style="margin-top:12px">
+      <div class="info-table" id="wiki-table"></div>
+    </div>
+  </div>
+
+  <!-- ── Capsule Server ── -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Capsule Server</span>
+      <span class="srv-badge capsule">contextcapsule.ai</span>
+    </div>
+
+    <div class="fg">
+      <label>Server URL</label>
+      <input type="url" id="cap-url" class="mono" placeholder="https://www.contextcapsule.ai">
+      <div class="hint">Default: <code>https://www.contextcapsule.ai</code> — or self-hosted</div>
+    </div>
+
+    <div class="fg">
+      <label>Get API Key by Email</label>
+      <div style="display:flex;gap:8px">
+        <input type="email" id="cap-email" placeholder="you@email.com">
+        <button class="btn btn-secondary" id="btn-get-key" style="white-space:nowrap;flex-shrink:0">Send Key</button>
+      </div>
+      <div class="hint">Enter your email — we'll mail your <code>ak_…</code> key to you.</div>
+    </div>
+    <div id="get-key-toast" class="hidden" style="margin-bottom:14px"></div>
+
+    <div class="fg">
+      <label>Capsule API Key</label>
+      <input type="password" id="cap-key" class="mono" placeholder="ak_…">
+      <div class="hint">Paste the key from your email, or from <code>POST /v1/auth/signup</code></div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-secondary" id="btn-test-cap">Test</button>
+      <button class="btn btn-cap"       id="btn-save-cap">Save Capsule</button>
+    </div>
+    <div id="cap-toast" class="hidden"></div>
+
+    <div id="cap-info" class="hidden" style="margin-top:12px">
+      <div class="info-table" id="cap-table"></div>
+    </div>
+  </div>
+
+  <!-- ── Quick start ── -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Quick Start</span>
+    </div>
+    <div style="font-size:12px;color:#6b7280;line-height:1.8">
+      <p style="margin-bottom:6px"><strong style="color:#e5e7eb">1. Wiki server (local dev)</strong></p>
+      <p style="margin-bottom:10px"><code>cd capsule-server && npm install && npm run dev</code></p>
+
+      <p style="margin-bottom:6px"><strong style="color:#e5e7eb">2. Wiki API key</strong></p>
+      <p style="margin-bottom:10px"><code>npm run db:seed -- you@email.com</code></p>
+
+      <p style="margin-bottom:6px"><strong style="color:#e5e7eb">3. Capsule key</strong></p>
+      <p style="margin-bottom:10px">Sign up at <a href="https://www.contextcapsule.ai" target="_blank">contextcapsule.ai</a> or run <code>POST /v1/auth/signup</code> on your own instance.</p>
+
+      <p style="margin-bottom:6px"><strong style="color:#e5e7eb">4. Load the extension</strong></p>
+      <p><code>chrome://extensions → Developer mode → Load unpacked → wiki-extension/</code></p>
+    </div>
+  </div>
+
+</div>
+<script src="options.js"></script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+Next steps: cd capsule-server && npm install, copy .env.example to .env, run npm run db:generate && npm run db:migrate, then npm run dev
+
+Route	Purpose
+POST /v1/wiki/sources	Store a raw document (immutable)
+POST /v1/wiki/pages/batch	Client pushes up to 50 processed pages at once, with parent/cross-ref titles resolved automatically
+POST /v1/wiki/pages/cross-refs	Add typed link between two pages (related/contradicts/supports/extends)
+DELETE /v1/wiki/pages/cross-refs/:id	Remove a link
+POST /v1/wiki/capsule	Compress selected pages → markdown context blob, logged in ops_log
+
+
+
+cd capsule-server && npm run db:seed -- you@email.com
+
+capusle api key
+ak_06ee6bb2583674e6bc237c21c1caf24cb218b81f40b39b282f43daba4c44e916
+

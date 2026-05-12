@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "Wiki Clipper",
+  "description": "Clip web pages to your personal LLM wiki. Powered by capsule-server.",
+  "version": "1.0.0",
+  "permissions": ["storage", "activeTab", "scripting", "tabs"],
+  "host_permissions": [
+    "http://localhost:3001/*",
+    "https://*/*"
+  ],
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "Wiki Clipper"
+  },
+  "options_page": "options/options.html"
+}
